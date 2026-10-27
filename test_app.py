@@ -1,4 +1,11 @@
-from app import app
+import pytest
+from app import app, tasks
+
+
+@pytest.fixture(autouse=True)
+def reset_tasks():
+    """Reset shared task data before each test."""
+    tasks.clear()
 
 
 def test_home():
@@ -23,3 +30,11 @@ def test_empty_title_is_rejected():
     response = client.post("/tasks", json={"title": ""})
 
     assert response.status_code == 400
+
+
+def test_get_tasks_returns_empty_list():
+    client = app.test_client()
+    response = client.get("/tasks")
+
+    assert response.status_code == 200
+    assert response.json == []

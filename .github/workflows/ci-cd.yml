@@ -1,4 +1,4 @@
-name: Task Manager Docker Build
+name: Task Manager CI/CD
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  docker-build:
+  test-and-build:
     name: Test and Build Docker Image
     runs-on: ubuntu-latest
 
@@ -43,3 +43,4 @@ jobs:
           context: .
           push: false
           tags: task-manager-api:latest
+          outputs: type=docker

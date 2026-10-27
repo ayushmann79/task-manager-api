@@ -1,3 +1,4 @@
+
 name: Task Manager CI
 
 on:
@@ -8,7 +9,7 @@ on:
 
 jobs:
   test:
-    name: Run Python Tests
+    name: Run Python Tests and Build Docker Image
     runs-on: ubuntu-latest
 
     steps:
@@ -30,3 +31,6 @@ jobs:
 
       - name: Run tests
         run: python -m pytest -v
+
+      - name: Build Docker image
+        run: docker build -t task-manager-api:ci .

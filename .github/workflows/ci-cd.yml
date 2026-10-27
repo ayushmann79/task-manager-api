@@ -1,4 +1,4 @@
-name: Task Manager CI/CD
+name: Task Manager Docker Build
 
 on:
   push:
@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  test-and-publish:
-    name: Test, Build, and Publish Docker Image
+  docker-build:
+    name: Test and Build Docker Image
     runs-on: ubuntu-latest
 
     steps:
@@ -37,40 +37,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Verify Docker Hub credentials
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-        run: |
-          if [ -z "$DOCKERHUB_USERNAME" ]; then
-            echo "::error::DOCKERHUB_USERNAME is missing"
-            exit 1
-          fi
-
-          if [ -z "$DOCKERHUB_TOKEN" ]; then
-            echo "::error::DOCKERHUB_TOKEN is missing"
-            exit 1
-          fi
-
-          if [ "$DOCKERHUB_USERNAME" != "ayushmann79" ]; then
-            echo "::error::DOCKERHUB_USERNAME does not match the expected Docker Hub account"
-            exit 1
-          fi
-
-          echo "Required Docker Hub secrets are present."
-
-      - name: Log in to Docker Hub
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: docker/login-action@v4
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          scope: 'repository:ayushmann79/task-manager-api:pull,push'
-
-      - name: Build and publish Docker image
+      - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          tags: ayushmann79/task-manager-api:latest
+          push: false
+          tags: task-manager-api:latest
